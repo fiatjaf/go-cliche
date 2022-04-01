@@ -74,15 +74,15 @@ type PayInvoiceResult struct {
 }
 
 type CheckPaymentResult struct {
-	Status           string `json:"status"`
-	SeenAt           int64  `json:"seen_at"`
-	Invoice          string `json:"invoice"`
-	Preimage         string `json:"preimage"`
-	UpdatedAt        int64  `json:"updated_at"`
-	FeeMsatoshi      int64  `json:"fee_msatoshi"`
-	PaymentHash      string `json:"payment_hash"`
-	MsatoshiSent     int64  `json:"msatoshi_sent"`
-	MsatoshiReceived int64  `json:"msatoshi_received"`
+	Status      string `json:"status"`
+	SeenAt      int64  `json:"seen_at"`
+	Invoice     string `json:"invoice"`
+	Preimage    string `json:"preimage"`
+	Msatoshi    int64  `json:"msatoshi"`
+	UpdatedAt   int64  `json:"updated_at"`
+	IsIncoming  bool   `json:"is_incoming"`
+	FeeMsatoshi int64  `json:"fee_msatoshi"`
+	PaymentHash string `json:"payment_hash"`
 }
 
 type Event struct {
