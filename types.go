@@ -28,11 +28,11 @@ type GetInfoResult struct {
 	BlockHeight int `json:"block_height"`
 	Wallets     []struct {
 		Label   string `json:"label"`
-		Balance int    `json:"balance"`
+		Balance int64  `json:"balance"`
 	} `json:"wallets"`
 	Channels []struct {
 		ID      string `json:"id"`
-		Balance int    `json:"balance"`
+		Balance int64  `json:"balance"`
 	} `json:"channels"`
 	KnownChannels struct {
 		Normal int `json:"normal"`
@@ -52,19 +52,18 @@ type GetInfoResult struct {
 type CreateInvoiceParams struct {
 	Description     string `json:"description,omitempty"`
 	DescriptionHash string `json:"description_hash,omitempty"`
-	Msatoshi        int    `json:"msatoshi,omitempty"`
+	Msatoshi        int64  `json:"msatoshi,omitempty"`
 	Preimage        string `json:"preimage,omitempty"`
 }
 
 type CreateInvoiceResult struct {
 	Invoice     string `json:"invoice"`
 	PaymentHash string `json:"payment_hash"`
-	HintsCount  int    `json:"hints_count"`
 }
 
 type PayInvoiceParams struct {
 	Invoice  string `json:"invoice"`
-	Msatoshi int    `json:"msatoshi,omitempty"`
+	Msatoshi int64  `json:"msatoshi,omitempty"`
 }
 
 type PayInvoiceResult struct {
@@ -72,6 +71,18 @@ type PayInvoiceResult struct {
 	Payee       string `json:"payee"`
 	FeeReserve  int    `json:"fee_reserve"`
 	PaymentHash string `json:"payment_hash"`
+}
+
+type CheckPaymentResult struct {
+	Status           string `json:"status"`
+	SeenAt           int64  `json:"seen_at"`
+	Invoice          string `json:"invoice"`
+	Preimage         string `json:"preimage"`
+	UpdatedAt        int64  `json:"updated_at"`
+	FeeMsatoshi      int64  `json:"fee_msatoshi"`
+	PaymentHash      string `json:"payment_hash"`
+	MsatoshiSent     int64  `json:"msatoshi_sent"`
+	MsatoshiReceived int64  `json:"msatoshi_received"`
 }
 
 type Event struct {
@@ -88,11 +99,15 @@ type PaymentFailedEvent struct {
 type PaymentReceivedEvent struct {
 	Event
 	PaymentHash string `json:"payment_hash"`
+	Preimage    string `json:"preimage"`
+	Msatoshi    int64  `json:"msatoshi"`
 }
 
 type PaymentSucceededEvent struct {
 	Event
 	PaymentHash string `json:"payment_hash"`
+	FeeMsatoshi int64  `json:"fee_msatoshi"`
+	Msatoshi    int64  `json:"msatoshi"`
+	Preimage    string `json:"preimage"`
 	Parts       int    `json:"parts"`
-	FeeMsatoshi int    `json:"fee_msatoshi"`
 }
