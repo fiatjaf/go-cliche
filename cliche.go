@@ -14,8 +14,8 @@ type Control struct {
 	JARPath string
 	DataDir string
 
-	LogStderr           bool
-	LogIrrelevantStdout bool
+	DontLogStderr bool
+	DontLogStdout bool
 
 	stdin   *json.Encoder
 	waiting map[string]chan JSONRPCResponse
@@ -44,7 +44,7 @@ func (c *Control) Start() error {
 	}
 	c.stdin = json.NewEncoder(stdin)
 
-	if c.LogStderr {
+	if !c.DontLogStderr {
 		stderr, err := cmd.StderrPipe()
 		if err != nil {
 			return fmt.Errorf("failed to open cliche stderr: %w", err)
@@ -111,7 +111,9 @@ func (c *Control) Start() error {
 			}
 
 			// it's not json
-			log.Print("stdout: ", strings.TrimSpace(string(line)))
+			if !c.DontLogStdout {
+				log.Print("stdout: ", strings.TrimSpace(string(line)))
+			}
 		}
 	}()
 
