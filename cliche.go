@@ -38,6 +38,12 @@ func (c *Control) Start() error {
 		"-jar", c.JARPath,
 	)
 
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return fmt.Errorf("failed to open cliche stdin: %w", err)
+	}
+	c.stdin = json.NewEncoder(stdin)
+
 	if c.LogStderr {
 		stderr, err := cmd.StderrPipe()
 		if err != nil {
@@ -57,10 +63,12 @@ func (c *Control) Start() error {
 		}()
 	}
 
-	stdout, err := cmd.StderrPipe()
+	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		return fmt.Errorf("failed to open cliche stdout: %w", err)
 	}
+
+	ready := make(chan struct{})
 
 	go func() {
 		reader := bufio.NewReader(stdout)
@@ -72,18 +80,12 @@ func (c *Control) Start() error {
 				continue
 			}
 
-			// is this a response from a command?
-			var response JSONRPCResponse
-			if err = json.Unmarshal(line, &response); err == nil {
-				if awaiter, ok := c.waiting[response.Id]; ok {
-					awaiter <- response
-				}
-			}
-
 			// is this an event?
 			var event Event
-			if err = json.Unmarshal(line, &event); err == nil {
+			if err = json.Unmarshal(line, &event); err == nil && event.Event != "" {
 				switch event.Event {
+				case "ready":
+					ready <- struct{}{}
 				case "payment_succeeded":
 					var ps PaymentSucceededEvent
 					json.Unmarshal(line, &ps)
@@ -99,10 +101,26 @@ func (c *Control) Start() error {
 				}
 			}
 
+			// is this a response from a command?
+			var response JSONRPCResponse
+			if err = json.Unmarshal(line, &response); err == nil {
+				if awaiter, ok := c.waiting[response.Id]; ok {
+					awaiter <- response
+				}
+				continue
+			}
+
 			// it's not json
 			log.Print("stdout: ", strings.TrimSpace(string(line)))
 		}
 	}()
+
+	if err = cmd.Start(); err != nil {
+		return fmt.Errorf("failed to start cliche (%s): %w", c.JARPath, err)
+	}
+
+	// wait until cliche is ready to receive commands
+	<-ready
 
 	return nil
 }
