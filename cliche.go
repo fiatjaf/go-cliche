@@ -137,12 +137,3 @@ func (c *Control) Call(method string, params interface{}) (json.RawMessage, erro
 
 	return response.Result, nil
 }
-
-func (c *Control) GetInfo() (result GetInfoResult, err error) {
-	resultJson, err := c.Call("get-info", map[string]interface{}{})
-	if err != nil {
-		return result, err
-	}
-	err = json.Unmarshal(resultJson, &result)
-	return result, err
-}

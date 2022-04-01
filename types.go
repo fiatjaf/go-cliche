@@ -49,10 +49,22 @@ type GetInfoResult struct {
 	} `json:"fee_rates"`
 }
 
+type CreateInvoiceParams struct {
+	Description     string `json:"description,omitempty"`
+	DescriptionHash string `json:"description_hash,omitempty"`
+	Msatoshi        int    `json:"msatoshi,omitempty"`
+	Preimage        string `json:"preimage,omitempty"`
+}
+
 type CreateInvoiceResult struct {
 	Invoice     string `json:"invoice"`
 	PaymentHash string `json:"payment_hash"`
 	HintsCount  int    `json:"hints_count"`
+}
+
+type PayInvoiceParams struct {
+	Invoice  string `json:"invoice"`
+	Msatoshi int    `json:"msatoshi,omitempty"`
 }
 
 type PayInvoiceResult struct {
