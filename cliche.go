@@ -55,9 +55,9 @@ func (c *Control) Start() error {
 
 			for {
 				if line, err := reader.ReadBytes('\n'); err != nil {
-					log.Printf("failed to read from stderr: %s", err.Error())
+					log.Printf("[go-cliche] failed to read from stderr: %s", err.Error())
 				} else {
-					log.Print("stderr: ", strings.TrimSpace(string(line)))
+					log.Print("[go-cliche] stderr: ", strings.TrimSpace(string(line)))
 				}
 			}
 		}()
@@ -76,7 +76,7 @@ func (c *Control) Start() error {
 		for {
 			line, err := reader.ReadBytes('\n')
 			if err != nil {
-				log.Printf("failed to read from stdout: %s", err.Error())
+				log.Printf("[go-cliche] failed to read from stdout: %s", err.Error())
 				continue
 			}
 
@@ -112,7 +112,7 @@ func (c *Control) Start() error {
 
 			// it's not json
 			if !c.DontLogStdout {
-				log.Print("stdout: ", strings.TrimSpace(string(line)))
+				log.Print("[go-cliche] stdout: ", strings.TrimSpace(string(line)))
 			}
 		}
 	}()
