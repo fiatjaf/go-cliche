@@ -132,7 +132,11 @@ func (c *Control) Call(method string, params interface{}) (json.RawMessage, erro
 	id := fmt.Sprintf("id:%d", rand.Int63())
 	ch := make(chan JSONRPCResponse, 1)
 	c.waiting[id] = ch
-	c.stdin.Encode(JSONRPCMessage{"2.0", id, method, params})
+	err := c.stdin.Encode(JSONRPCMessage{"2.0", id, method, params})
+	if err != nil {
+		return nil,
+			fmt.Errorf("error writing json to cliche stdin ('%s'): %w", method, err)
+	}
 	response := <-ch
 	if response.Error != nil {
 		return nil, fmt.Errorf("'%s' error: '%s'", method, response.Error.Message)
