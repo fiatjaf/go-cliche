@@ -99,6 +99,7 @@ func (c *Control) Start() error {
 					json.Unmarshal(line, &ps)
 					c.IncomingPayments <- ps
 				}
+				continue
 			}
 
 			// is this a response from a command?
