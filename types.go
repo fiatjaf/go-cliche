@@ -91,9 +91,9 @@ type Event struct {
 
 type PaymentFailedEvent struct {
 	Event
-	PaymentHash string `json:"payment_hash"`
-	Parts       int    `json:"parts"`
-	Failure     string `json:"failure"`
+	PaymentHash string   `json:"payment_hash"`
+	Parts       int      `json:"parts"`
+	Failure     []string `json:"failure"`
 }
 
 type PaymentReceivedEvent struct {
