@@ -73,7 +73,7 @@ type PayInvoiceResult struct {
 	PaymentHash string `json:"payment_hash"`
 }
 
-type CheckPaymentResult struct {
+type PaymentInfo struct {
 	Status      string `json:"status"`
 	SeenAt      int64  `json:"seen_at"`
 	Invoice     string `json:"invoice"`
@@ -84,6 +84,12 @@ type CheckPaymentResult struct {
 	FeeMsatoshi int64  `json:"fee_msatoshi"`
 	PaymentHash string `json:"payment_hash"`
 }
+
+type CheckPaymentResult struct {
+	PaymentInfo
+}
+
+type ListPaymentsResult []PaymentInfo
 
 type Event struct {
 	Event string `json:"event"`

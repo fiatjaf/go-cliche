@@ -48,3 +48,17 @@ func (c *Control) CheckPayment(hash string) (
 	err = json.Unmarshal(resultJson, &result)
 	return result, err
 }
+
+func (c *Control) ListPayments(count int) (
+	result ListPaymentsResult,
+	err error,
+) {
+	resultJson, err := c.Call("list-payments", struct {
+		Count int `json:"count"`
+	}{count})
+	if err != nil {
+		return result, err
+	}
+	err = json.Unmarshal(resultJson, &result)
+	return result, err
+}
