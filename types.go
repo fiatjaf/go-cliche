@@ -20,12 +20,8 @@ type JSONRPCResponse struct {
 }
 
 type GetInfoResult struct {
-	Keys struct {
-		Pub       string `json:"pub"`
-		Priv      string `json:"priv"`
-		Mnemonics string `json:"mnemonics"`
-	} `json:"keys"`
-	BlockHeight int `json:"block_height"`
+	MainPubKey  string `json:"main_pubkey"`
+	BlockHeight int    `json:"block_height"`
 	Wallets     []struct {
 		Label   string `json:"label"`
 		Balance int64  `json:"balance"`
