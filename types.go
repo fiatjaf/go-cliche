@@ -20,29 +20,63 @@ type JSONRPCResponse struct {
 }
 
 type GetInfoResult struct {
-	MainPubKey  string `json:"main_pubkey"`
-	BlockHeight int    `json:"block_height"`
-	Wallets     []struct {
-		Label   string `json:"label"`
-		Balance int64  `json:"balance"`
-	} `json:"wallets"`
-	Channels []struct {
-		ID      string `json:"id"`
-		Balance int64  `json:"balance"`
-	} `json:"channels"`
-	KnownChannels struct {
-		Normal int `json:"normal"`
-		Hosted int `json:"hosted"`
-	} `json:"known_channels"`
-	OutgoingPayments []interface{} `json:"outgoing_payments"`
-	FiatRates        struct {
-		Usd float64 `json:"usd"`
-	} `json:"fiat_rates"`
-	FeeRates struct {
+	BlockHeight int           `json:"block_height"`
+	Channels    []ChannelInfo `json:"channels"`
+	FeeRates    struct {
 		Num1   int `json:"1"`
 		Num10  int `json:"10"`
 		Num100 int `json:"100"`
 	} `json:"fee_rates"`
+	FiatRates struct {
+		USD float64 `json:"usd"`
+	} `json:"fiat_rates"`
+	KnownChannels struct {
+		Hosted int `json:"hosted"`
+		Normal int `json:"normal"`
+	} `json:"known_channels"`
+	MainPubkey       string `json:"main_pubkey"`
+	OutgoingPayments []struct {
+		Hash  string `json:"hash"`
+		Htlcs []struct {
+			Channel  string `json:"channel"`
+			Expiry   int    `json:"expiry"`
+			ID       int    `json:"id"`
+			Msatoshi int64  `json:"msatoshi"`
+		} `json:"htlcs"`
+	} `json:"outgoing_payments"`
+	Wallets []struct {
+		Balance int64  `json:"balance"`
+		Label   string `json:"label"`
+	} `json:"wallets"`
+}
+
+type ChannelInfo struct {
+	Balance       int   `json:"balance"`
+	CanReceive    int64 `json:"can_receive"`
+	CanSend       int64 `json:"can_send"`
+	HostedChannel struct {
+		OverrideProposal int64 `json:"override_proposal"`
+		ResizeProposal   int64 `json:"resize_proposal"`
+	} `json:"hosted_channel"`
+	ID       string `json:"id"`
+	Inflight struct {
+		Incoming int `json:"incoming"`
+		Outgoing int `json:"outgoing"`
+		Revealed int `json:"revealed"`
+	} `json:"inflight"`
+	Peer struct {
+		Addr      string `json:"addr"`
+		OurPubkey string `json:"our_pubkey"`
+		Pubkey    string `json:"pubkey"`
+	} `json:"peer"`
+	Policy struct {
+		BaseFee         int64 `json:"base_fee"`
+		CltvDelta       int   `json:"cltv_delta"`
+		FeePerMillionth int   `json:"fee_per_millionth"`
+		HtlcMax         int64 `json:"htlc_max"`
+		HtlcMin         int64 `json:"htlc_min"`
+	} `json:"policy,omitempty"`
+	Status string `json:"status"`
 }
 
 type CreateInvoiceParams struct {
