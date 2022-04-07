@@ -84,6 +84,7 @@ type CreateInvoiceParams struct {
 	DescriptionHash string `json:"description_hash,omitempty"`
 	Msatoshi        int64  `json:"msatoshi,omitempty"`
 	Preimage        string `json:"preimage,omitempty"`
+	Label           string `json:"label,omitempty"`
 }
 
 type CreateInvoiceResult struct {
