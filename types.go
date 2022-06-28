@@ -2,21 +2,24 @@ package cliche
 
 import "encoding/json"
 
-type JSONRPCMessage struct {
-	Version string      `json:"jsonrpc"`
-	Id      string      `json:"id"`
-	Method  string      `json:"method"`
-	Params  interface{} `json:"params"`
+type JSONRPCRequest struct {
+	Id     string      `json:"id"`
+	Method string      `json:"method"`
+	Params interface{} `json:"params"`
 }
 
 type JSONRPCResponse struct {
-	Version string          `json:"jsonrpc"`
-	Id      string          `json:"id"`
-	Result  json.RawMessage `json:"result,omitempty"`
-	Error   *struct {
+	Id     string          `json:"id"`
+	Result json.RawMessage `json:"result,omitempty"`
+	Error  *struct {
 		Code    int    `json:"code"`
 		Message string `json:"message"`
 	} `json:"error,omitempty"`
+}
+
+type JSONRPCNotification struct {
+	Method string          `json:"method"`
+	Params json.RawMessage `json:"params"`
 }
 
 type GetInfoResult struct {
@@ -122,26 +125,19 @@ type CheckPaymentResult struct {
 
 type ListPaymentsResult []PaymentInfo
 
-type Event struct {
-	Event string `json:"event"`
-}
-
 type PaymentFailedEvent struct {
-	Event
 	PaymentHash string   `json:"payment_hash"`
 	Parts       int      `json:"parts"`
 	Failure     []string `json:"failure"`
 }
 
 type PaymentReceivedEvent struct {
-	Event
 	PaymentHash string `json:"payment_hash"`
 	Preimage    string `json:"preimage"`
 	Msatoshi    int64  `json:"msatoshi"`
 }
 
 type PaymentSucceededEvent struct {
-	Event
 	PaymentHash string `json:"payment_hash"`
 	FeeMsatoshi int64  `json:"fee_msatoshi"`
 	Msatoshi    int64  `json:"msatoshi"`

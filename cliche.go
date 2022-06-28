@@ -11,8 +11,8 @@ import (
 )
 
 type Control struct {
-	JARPath string
-	DataDir string
+	BinaryPath string
+	DataDir    string
 
 	DontLogStderr bool
 	DontLogStdout bool
@@ -32,10 +32,9 @@ func (c *Control) Start() error {
 	c.IncomingPayments = make(chan PaymentReceivedEvent)
 
 	cmd := exec.Command(
-		"java",
+		c.BinaryPath,
 		"-Dcliche.datadir="+c.DataDir,
 		"-Dcliche.json.compact=true",
-		"-jar", c.JARPath,
 	)
 
 	stdin, err := cmd.StdinPipe()
@@ -81,22 +80,22 @@ func (c *Control) Start() error {
 			}
 
 			// is this an event?
-			var event Event
-			if err = json.Unmarshal(line, &event); err == nil && event.Event != "" {
-				switch event.Event {
+			var event JSONRPCNotification
+			if err = json.Unmarshal(line, &event); err == nil && event.Method != "" {
+				switch event.Method {
 				case "ready":
 					ready <- struct{}{}
 				case "payment_succeeded":
 					var ps PaymentSucceededEvent
-					json.Unmarshal(line, &ps)
+					json.Unmarshal(event.Params, &ps)
 					c.PaymentSuccesses <- ps
 				case "payment_failed":
 					var ps PaymentFailedEvent
-					json.Unmarshal(line, &ps)
+					json.Unmarshal(event.Params, &ps)
 					c.PaymentFailures <- ps
 				case "payment_received":
 					var ps PaymentReceivedEvent
-					json.Unmarshal(line, &ps)
+					json.Unmarshal(event.Params, &ps)
 					c.IncomingPayments <- ps
 				}
 				continue
@@ -119,7 +118,7 @@ func (c *Control) Start() error {
 	}()
 
 	if err = cmd.Start(); err != nil {
-		return fmt.Errorf("failed to start cliche (%s): %w", c.JARPath, err)
+		return fmt.Errorf("failed to start cliche (%s): %w", c.BinaryPath, err)
 	}
 
 	// wait until cliche is ready to receive commands
@@ -132,7 +131,7 @@ func (c *Control) Call(method string, params interface{}) (json.RawMessage, erro
 	id := fmt.Sprintf("id:%d", rand.Int63())
 	ch := make(chan JSONRPCResponse, 1)
 	c.waiting[id] = ch
-	err := c.stdin.Encode(JSONRPCMessage{"2.0", id, method, params})
+	err := c.stdin.Encode(JSONRPCRequest{id, method, params})
 	if err != nil {
 		return nil,
 			fmt.Errorf("error writing json to cliche stdin ('%s'): %w", method, err)
