@@ -11,6 +11,7 @@ import (
 )
 
 type Control struct {
+	JARPath    string
 	BinaryPath string
 	DataDir    string
 
@@ -31,11 +32,26 @@ func (c *Control) Start() error {
 	c.PaymentFailures = make(chan PaymentFailedEvent)
 	c.IncomingPayments = make(chan PaymentReceivedEvent)
 
-	cmd := exec.Command(
-		c.BinaryPath,
-		"-Dcliche.datadir="+c.DataDir,
-		"-Dcliche.json.compact=true",
-	)
+	var cmd *exec.Cmd
+	var usingPath string
+	if c.BinaryPath != "" {
+		usingPath = c.BinaryPath
+		cmd = exec.Command(
+			c.BinaryPath,
+			"-Dcliche.datadir="+c.DataDir,
+			"-Dcliche.json.compact=true",
+		)
+	} else if c.JARPath != "" {
+		usingPath = c.JARPath
+		cmd = exec.Command(
+			"java",
+			"-Dcliche.datadir="+c.DataDir,
+			"-Dcliche.json.compact=true",
+			"-jar", c.JARPath,
+		)
+	} else {
+		return fmt.Errorf("must specify BinaryPath or JARPath, but both are empty")
+	}
 
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
@@ -118,7 +134,7 @@ func (c *Control) Start() error {
 	}()
 
 	if err = cmd.Start(); err != nil {
-		return fmt.Errorf("failed to start cliche (%s): %w", c.BinaryPath, err)
+		return fmt.Errorf("failed to start cliche (%s): %w", usingPath, err)
 	}
 
 	// wait until cliche is ready to receive commands
