@@ -1,6 +1,6 @@
 # go-cliche
 
-This is a small library that will start [cliché](https://github.com/fiatjaf/cliche) (with `java -jar` stuff, so you'll need Java) and communicate with it via STDIN and STDOUT, allowing you to send commands, receive replies and also receive events.
+This is a small library that will start [cliché](https://github.com/fiatjaf/cliche) and communicate with it via STDIN and STDOUT, allowing you to send commands, receive replies and also receive events.
 
 See the example below or read the full [API docs](https://pkg.go.dev/github.com/fiatjaf/go-cliche) for more (not much more).
 
@@ -11,7 +11,8 @@ See the example below or read the full [API docs](https://pkg.go.dev/github.com/
 ```go
 c := &cliche.Control{
 	DataDir: ".",
-	JARPath: "/home/fiatjaf/comp/cliche/target/scala-2.13/cliche-assembly-0.1.0.jar",
+    BinaryPath: "/usr/local/bin/cliche",
+	// or JARPath: "/home/name/Downloads/cliche.jar", (requires java)
 }
 
 err := c.Start()
@@ -28,6 +29,16 @@ if err != nil {
 	log.Fatal(err)
 }
 log.Print(info)
+```
+
+### Listening for events
+
+```go
+go func () {
+	for invpaid := range c.IncomingPayments {
+		log.Printf("got payment: %d msat", invpaid.Msatoshi)
+    }
+}
 ```
 
 ### Creating an invoice
@@ -49,7 +60,7 @@ resp, err := c.Call("request-hc", map[string]interface{}{
 	"host":   "134.209.228.207",
 	"port":   80,
 })
-# resp will be json.RawMessage
+# resp will be json.RawMessage aka []byte
 ```
 
 Other commands are available in the [API docs](https://pkg.go.dev/github.com/fiatjaf/go-cliche).
