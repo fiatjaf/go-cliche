@@ -54,14 +54,18 @@ type GetInfoResult struct {
 }
 
 type ChannelInfo struct {
-	Balance       int   `json:"balance"`
-	CanReceive    int64 `json:"can_receive"`
-	CanSend       int64 `json:"can_send"`
-	HostedChannel struct {
-		OverrideProposal int64 `json:"override_proposal"`
-		ResizeProposal   int64 `json:"resize_proposal"`
+	ID             string `json:"id"`
+	ShortChannelId string `json:"short_channel_id"`
+	Balance        int    `json:"balance"`
+	CanReceive     int64  `json:"can_receive"`
+	CanSend        int64  `json:"can_send"`
+	HostedChannel  struct {
+		OverrideProposal struct {
+			OurBalance   int64 `json:"our_balance"`
+			TheirBalance int64 `json:"their_balance"`
+		} `json:"override_proposal"`
+		ResizeProposal int64 `json:"resize_proposal"`
 	} `json:"hosted_channel"`
-	ID       string `json:"id"`
 	Inflight struct {
 		Incoming int `json:"incoming"`
 		Outgoing int `json:"outgoing"`
