@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 type Control struct {
@@ -71,6 +72,7 @@ func (c *Control) Start() error {
 			for {
 				if line, err := reader.ReadBytes('\n'); err != nil {
 					log.Printf("[go-cliche] failed to read from stderr: %s", err.Error())
+					time.Sleep(30 * time.Second)
 				} else {
 					log.Print("[go-cliche] stderr: ", strings.TrimSpace(string(line)))
 				}
@@ -92,6 +94,7 @@ func (c *Control) Start() error {
 			line, err := reader.ReadBytes('\n')
 			if err != nil {
 				log.Printf("[go-cliche] failed to read from stdout: %s", err.Error())
+				time.Sleep(30 * time.Second)
 				continue
 			}
 
