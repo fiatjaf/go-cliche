@@ -60,11 +60,11 @@ type ChannelInfo struct {
 	CanReceive     int64  `json:"can_receive"`
 	CanSend        int64  `json:"can_send"`
 	HostedChannel  struct {
-		OverrideProposal struct {
+		OverrideProposal *struct {
 			OurBalance   int64 `json:"our_balance"`
 			TheirBalance int64 `json:"their_balance"`
 		} `json:"override_proposal"`
-		ResizeProposal int64 `json:"resize_proposal"`
+		ResizeProposal *int64 `json:"resize_proposal"`
 	} `json:"hosted_channel"`
 	Inflight struct {
 		Incoming int `json:"incoming"`
