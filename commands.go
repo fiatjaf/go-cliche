@@ -1,6 +1,8 @@
 package cliche
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 func (c *Control) GetInfo() (result GetInfoResult, err error) {
 	resultJson, err := c.Call("get-info", map[string]interface{}{})
